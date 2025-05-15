@@ -1,4 +1,20 @@
-.vs/
+# Build Folders
 bin/
 obj/
+
+# Visual Studio user-specific files
+.vs/
+*.user
+*.suo
+
+# NuGet packages folder (optional, depends on project type)
 packages/
+
+# Rider IDE
+.idea/
+
+# Mac system files
+.DS_Store
+
+# Windows thumbnails
+Thumbs.db
