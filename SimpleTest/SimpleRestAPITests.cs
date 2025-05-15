@@ -1,4 +1,5 @@
-﻿using SimpleRestAPI.Controllers;
+﻿using Microsoft.Extensions.Logging.Abstractions;
+using SimpleRestAPI.Controllers;
 using SimpleRestAPI.Models;
 
 namespace SimpleTest
@@ -12,7 +13,7 @@ namespace SimpleTest
         public void Initialize_Controller()
         {
             SimpleController.ResetList();
-            controller = new SimpleController();
+            controller = new SimpleController(new NullLogger<SimpleController>);
         }
 
         [TestMethod]

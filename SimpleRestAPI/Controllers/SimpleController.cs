@@ -10,10 +10,22 @@ namespace SimpleRestAPI.Controllers
         #region private 
         private static List<Item> items = new List<Item>();
         private static int nextId = 1;
-        private ILogger _logger;
+        private ILogger<SimpleController> _logger;
         #endregion
 
-
+        public SimpleController(ILogger<SimpleController> logger)
+        {
+            _logger = logger;
+        }
+        
+        /// <summary>
+        /// Clears the List of items and resets nextId to 1
+        /// </summary>
+        public static void ResetList()
+        {
+            items.Clear();
+            nextId = 1;
+        }
 
         /// <summary>
         /// Gets all users.
