@@ -8,24 +8,29 @@ namespace SimpleRestAPI.Controllers
     public class SimpleController : ControllerBase
     {
         #region private 
-        private static List<Item> items = new List<Item>();
-        private static int nextId = 1;
         private ILogger<SimpleController> _logger;
+        private Service _service;
         #endregion
 
-        public SimpleController(ILogger<SimpleController> logger)
+
+        /// <summary>
+        /// SimpleController Constructor
+        /// </summary>
+        /// <param name="logger"></param>
+        public SimpleController(ILogger<SimpleController> logger, Service service)
         {
             _logger = logger;
+            _service = service;
         }
-        
+
+
+
         /// <summary>
-        /// Clears the List of items and resets nextId to 1
+        /// Clears the list and resets id to 1
         /// </summary>
-        public static void ResetList()
-        {
-            items.Clear();
-            nextId = 1;
-        }
+
+
+
 
         /// <summary>
         /// Gets all users.
@@ -36,7 +41,7 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked GetUsers");
 
-            return items;
+            return Ok(_service.GetAllItems());
         }
 
 
@@ -51,23 +56,7 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked PostUser");
 
-            try
-            {
-                foreach (var item in newItems)
-                {
-                    item.Id = nextId++;
-                    items.Add(item);
-                }
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError($"Exception thrown while adding users : {ex}. Ex : {ex.Message}");
-                return StatusCode(500, "Internal server error");
-            }
-
-            _logger.LogInformation("PostUser has completed successfully");
-
-            return Ok(items);
+            return Ok(_service.Add(newItems));
         }
 
 
@@ -82,11 +71,7 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked GetUserById");
 
-            var item = items.FirstOrDefault(i => i.Id == id);
-            if (item == null)
-                return NotFound();
-
-            return item;
+            return Ok(_service.GetItemById(id));
         }
 
 
@@ -102,15 +87,14 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked UpdateUser");
 
-            var item = items.FirstOrDefault(i => i.Id == id);
-            if (item == null)
+            if (_service.Update(id, updatedItem))
+            {
+                return NoContent();
+            }
+            else
+            {
                 return NotFound();
-
-            item.name = updatedItem.name;
-            item.surname = updatedItem.surname;
-            item.phone = updatedItem.phone;
-            item.address = updatedItem.address;
-            return NoContent();
+            }
         }
 
 
@@ -125,12 +109,14 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked DeleteUser");
 
-            var item = items.FirstOrDefault(i => i.Id == id);
-            if (item == null)
+            if (_service.Delete(id))
+            {
+                return NoContent();
+            }
+            else
+            {
                 return NotFound();
-
-            items.Remove(item);
-            return NoContent();
+            }
         }
     }
 }
