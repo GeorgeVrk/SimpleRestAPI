@@ -1,4 +1,5 @@
 ﻿using Microsoft.AspNetCore.Mvc;
+using SimpleRestAPI.Interfaces;
 using SimpleRestAPI.Models;
 
 namespace SimpleRestAPI.Controllers
@@ -9,7 +10,7 @@ namespace SimpleRestAPI.Controllers
     {
         #region private 
         private ILogger<SimpleController> _logger;
-        private Service _service;
+        private IService _service;
         #endregion
 
 
@@ -17,25 +18,18 @@ namespace SimpleRestAPI.Controllers
         /// SimpleController Constructor
         /// </summary>
         /// <param name="logger"></param>
-        public SimpleController(ILogger<SimpleController> logger, Service service)
+        public SimpleController(ILogger<SimpleController> logger, IService service)
         {
             _logger = logger;
             _service = service;
         }
+        
 
-
-
-        /// <summary>
-        /// Clears the list and resets id to 1
-        /// </summary>
-
-
-
-
+        
         /// <summary>
         /// Gets all users.
         /// </summary>
-        /// <returns>All users</returns>
+        /// <returns>A 200 Ok response</returns>
         [HttpGet("users")]
         public ActionResult<List<Item>> GetUsers()
         {
@@ -56,13 +50,25 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked PostUser");
 
-            return Ok(_service.Add(newItems));
+            if (newItems == null)
+            {
+                _logger.LogWarning("PostUser was called with null or empty list.");
+                return BadRequest("Empty list");
+            }
+
+            var success = _service.Add(newItems);
+            if (!success)
+            {
+                return StatusCode(500);
+            }
+            
+            return Ok();
         }
 
 
 
         /// <summary>
-        /// Gets a user based on their Id
+        /// Gets a user by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns>Returns the user based on their Id or 404 if they dont exist</returns>
@@ -71,13 +77,19 @@ namespace SimpleRestAPI.Controllers
         {
             _logger.LogInformation("User has invoked GetUserById");
 
-            return Ok(_service.GetItemById(id));
+            var user = _service.GetItemById(id);
+            if (user == null)
+            {
+                _logger.LogWarning($"User with {id} not found.");
+                return NotFound();
+            }
+            return Ok(user);
         }
 
 
 
         /// <summary>
-        /// Updates a users info based on their Id
+        /// Updates a users info by Id
         /// </summary>
         /// <param name="id"></param>
         /// <param name="updatedItem"></param>
@@ -100,7 +112,7 @@ namespace SimpleRestAPI.Controllers
 
 
         /// <summary>
-        /// Deletes a user based on their Id
+        /// Deletes a user by Id
         /// </summary>
         /// <param name="id"></param>
         /// <returns>204 if the user was deleted successfully or 404 if the user was not found</returns>

@@ -12,7 +12,7 @@ namespace SimpleTest
         public void Get_All_Users_As_List_Of_Items()
         {
             //Arrange
-            var service = new Service();
+            var service = new Service(new NullLogger<Service>());
             var controller = new SimpleController(new NullLogger<SimpleController>(), service);
             controller.PostUser(new List<Item>
             {
@@ -41,7 +41,7 @@ namespace SimpleTest
         public void Post_Users()
         {
             //Arrange
-            var service = new Service();
+            var service = new Service(new NullLogger<Service>());
             var controller = new SimpleController(new NullLogger<SimpleController>(), service);
             List<Item> items = new List<Item>
             {
@@ -74,7 +74,7 @@ namespace SimpleTest
         public void Get_Specific_User_By_Id()
         {
             //Arrange
-            var service = new Service();
+            var service = new Service(new NullLogger<Service>());
             var controller = new SimpleController(new NullLogger<SimpleController>(), service);
             controller.PostUser(new List<Item>
             {
@@ -134,7 +134,7 @@ namespace SimpleTest
         public void Update_User()
         {
             //Arrange
-            var service = new Service();
+            var service = new Service(new NullLogger<Service>());
             var controller = new SimpleController(new NullLogger<SimpleController>(), service);
             controller.PostUser(new List<Item>
             {
@@ -173,7 +173,7 @@ namespace SimpleTest
         public void Delete_User()
         {
             //Arrange
-            var service = new Service();
+            var service = new Service(new NullLogger<Service>());
             var controller = new SimpleController(new NullLogger<SimpleController>(), service);
             controller.PostUser(new List<Item>
             {
